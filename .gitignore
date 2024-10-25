@@ -1,0 +1,4 @@
+# Arquivos e pastas para ignorar
+config.js
+node_modules/
+.env
