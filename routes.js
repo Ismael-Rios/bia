@@ -2,6 +2,7 @@
 const modobankModule = require('./modules/modobank');
 const zapsignModule = require('./modules/zapsign');
 const zabbixModule = require('./modules/zabbix');
+const testeModulo = require('./modules/teste');
 
 module.exports = (app, client) => {
     // Rota para o webhook do Modobank
@@ -20,5 +21,11 @@ module.exports = (app, client) => {
     app.post('/webhook/zabbix', (req, res) => {
         zabbixModule.handleZabbixWebhook(req.body, client);
         res.status(200).send('OK');
+    });
+
+    // Rota para o webhook do Teste
+    app.post('/webhook/teste', (req, res) => {
+        testeModulo.handleTesteWebhook(req.body, client);
+        res.status(200).send('Teste');
     });
 };
