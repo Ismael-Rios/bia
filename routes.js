@@ -19,6 +19,6 @@ module.exports = (app, client) => {
     // Rota para o webhook do Zabbix
     app.post('/webhook/zabbix', (req, res) => {
         zabbixModule.handleZabbixWebhook(req.body, client);
-        res.status(200).send('Webhook do Zabbix recebido!');
+        res.status(200).send('OK');
     });
 };
