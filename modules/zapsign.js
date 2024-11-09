@@ -23,7 +23,7 @@ function handleZapsignWebhook(data, client) {
         const message = {
             color: 39168,
             url: signedDocumentInfo,
-            title: "Documento assinado: ${documentId}",
+            title: `Documento assinado: ${documentId}`,
             footer: {
                 text: `Status: ${status}`
             },
