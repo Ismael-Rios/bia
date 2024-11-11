@@ -100,28 +100,46 @@ async function checkNewAtendimentos(client) {
                     const prioridadeDescritivo = prioridadeMap[ticket.prioridade] || 'Prioridade Desconhecida';
                     const departamentoDescritivo = departamentoMap[ticket.id_ticket_setor] || 'Departamento Desconhecido';
 
-                    const message =
-                        `> **${ticket.id} - ${ticket.titulo}**\n` +
-                        `> \n` +
-                        `> **Cliente:** ${cliente.id} - ${cliente.razao}\n` +
-                        `> **Status:** ${statusDescritivo}\n` +
-                        `> **Prioridade:** ${prioridadeDescritivo}\n` +
-                        //`> **Departamento:** ${departamentoDescritivo}\n` +
-                        //`> **Data de Criação:** ${ticket.data_criacao}\n` +
-                        //`> **Mensagem:**\n` +
-                        `${ticket.menssagem}`;
+                    const message = {
+                        color: 0xff0000,
+                        title: `${ticket.id} - ${ticket.titulo}`,
+                        description: ticket.menssagem,
+                        footer: {
+                            text: `Data de criação: ${ticket.data_criacao}`
+                        },
+                        fields: [
+                            {
+                                name: "\u200b",
+                                value: "\u200b"
+                            },
+                            {
+                                name: "Cliente",
+                                value: cliente.id +'-'+ cliente.razao
+                            },
+                            {
+                                name: "Status",
+                                value: statusDescritivo,
+                                inline: true
+                            },
+                            {
+                                name: "Prioridade",
+                                value: prioridadeDescritivo,
+                                inline: true
+                            }
+                        ]
+                    }
                     
                     // Determina o canal com base no departamento do ticket
                     const canalId = canalMap[ticket.id_ticket_setor] || config.CHANNEL_ID_SUPORTE; // Fallback para o canal de suporte se não encontrar
 
                     // Enviar notificação no Discord
-                    sendMessageToDiscord(client, message, canalId);
+                    sendMessageToDiscord(client, { embeds: [message] }, canalId);
                 } else {
                     console.error("Erro ao obter as informações do cliente.");
                 }
             }
         } else {
-            console.log("Nenhum ticket encontrado.");
+            //console.log("Nenhum ticket encontrado.");
         }
     } catch (error) {
         console.error(`Erro ao buscar tickets: ${error}`);
