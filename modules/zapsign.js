@@ -9,16 +9,21 @@ function handleZapsignWebhook(data, client) {
 
     // Envia mensagem apenas se o status for 'signed'
     if (status === 'signed') {
-        // Filtra apenas os signatários que têm status 'signed'
-        const signers = data.signers
-            .filter(signer => signer.email !== "contato@ilhaconnect.net.br") // Exclui MARCOS ASSUNÇÃO
-            .map(signer => `${signer.name}`) // Formata o restante dos signatários
-            .join(', '); // Juntando os nomes em uma string
+        // Filtra e mapeia os signatários
+        const filteredSigners = data.signers
+            .filter(signer => signer.email !== "contato@ilhaconnect.net.br")
+            .map(signer => ({
+                name: signer.name,
+                cpf: signer.cpf,
+                email: signer.email,
+                phoneNumber: signer.phone_number
+            }));
         
-        const signerCPF = data.signers
-            .filter(signer => signer.email !== "contato@ilhaconnect.net.br") // Exclui MARCOS ASSUNÇÃO
-            .map(signer => `${signer.cpf}`) // Formata o restante dos signatários
-            .join(', '); // Juntando os CPFs em uma string
+        // Cria as strings de nomes e CPFs a partir do array filtrado
+        const signerName = filteredSigners.map(signer => signer.name).join(', ');
+        const signerCPF = filteredSigners.map(signer => signer.cpf).join(', ');
+        const signerEmail = filteredSigners.map(signer => signer.email).join(', ');
+        const signerPhoneNumber = filteredSigners.map(signer => signer.phoneNumber).join(', ');
 
         const message = {
             color: 39168,
@@ -29,13 +34,24 @@ function handleZapsignWebhook(data, client) {
             },
             fields: [
                 {
-                    name: "Cliente",
-                    value: signers
-                },
-                {
                     name: "CPF",
                     value: signerCPF
+                },
+                {
+                    name: "Cliente",
+                    value: signerName
+                },
+                {
+                    name: "Telefone",
+                    value: signerPhoneNumber,
+                    inline: true
+                },
+                {
+                    name: "Email",
+                    value: signerEmail,
+                    inline: true
                 }
+                
             ]
         };
 
