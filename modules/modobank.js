@@ -14,17 +14,17 @@ function handleModobankWebhook(data, client) {
         fields: [
             {
                 name: "Pagador",
-                value: paymentInfo.amount
+                value: data.data.debtorAccount.name
             },
             {
                 name: "Valor",
-                value: `R$ ${data.data.debtorAccount.name}`
+                value: `R$ ${paymentInfo.amount}`
             }
             
         ]
     };
 
-    sendMessageToDiscord(client, { embeds: [message] }, config.CHANNEL_ID_MODOBANK);
+    sendMessageToDiscord(client, { embeds: [message] }, config.CHANNEL_ID_MODOBANK, 'ModoBank');
 }
 
 module.exports = { handleModobankWebhook };

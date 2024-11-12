@@ -55,7 +55,7 @@ function handleZapsignWebhook(data, client) {
             ]
         };
 
-        sendMessageToDiscord(client, { embeds: [message] }, config.CHANNEL_ID_ZAPSIGN);
+        sendMessageToDiscord(client, { embeds: [message] }, config.CHANNEL_ID_ZAPSIGN, 'Zapsign');
     }
 }
 

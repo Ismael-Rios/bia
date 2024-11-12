@@ -133,7 +133,7 @@ async function checkNewAtendimentos(client) {
                     const canalId = canalMap[ticket.id_ticket_setor] || config.CHANNEL_ID_SUPORTE; // Fallback para o canal de suporte se não encontrar
 
                     // Enviar notificação no Discord
-                    sendMessageToDiscord(client, { embeds: [message] }, canalId);
+                    sendMessageToDiscord(client, { embeds: [message] }, canalId, 'IXC');
                 } else {
                     console.error("Erro ao obter as informações do cliente.");
                 }
