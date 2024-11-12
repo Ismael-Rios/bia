@@ -14,11 +14,13 @@ function handleModobankWebhook(data, client) {
         fields: [
             {
                 name: "Pagador",
-                value: data.data.debtorAccount.name
+                value: data.data.debtorAccount.name,
+                inline: true
             },
             {
                 name: "Valor",
-                value: `R$ ${paymentInfo.amount}`
+                value: `R$ ${paymentInfo.amount}`,
+                inline: true
             }
             
         ]
