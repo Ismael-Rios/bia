@@ -20,12 +20,6 @@ const prioridadeMap = {
     'C': 'Crítica'
 };
 
-const departamentoMap = {
-    '1': 'Financeiro',
-    '2': 'Suporte',
-    '5': 'Comercial'
-};
-
 // Mapeamento de departamentos para canais do Discord
 const canalMap = {
     '1': config.CHANNEL_ID_FINANCEIRO,
@@ -92,50 +86,52 @@ async function checkNewAtendimentos(client) {
 
         if (response.data && response.data.registros && response.data.registros.length > 0) {
             for (const ticket of response.data.registros) {
-                // Faz uma requisição para obter os dados do cliente
-                const cliente = await getClienteInfo(ticket.id_cliente); // Adicionado o await aqui
+                // Filtragem de tickets por responsável técnico
+                if (ticket.id_responsavel_tecnico == '0' || ticket.id_responsavel_tecnico == '9') {
+                    // Faz uma requisição para obter os dados do cliente
+                    const cliente = await getClienteInfo(ticket.id_cliente); // Adicionado o await aqui
 
-                if (cliente) {
-                    const statusDescritivo = statusMap[ticket.su_status] || 'Status Desconhecido';
-                    const prioridadeDescritivo = prioridadeMap[ticket.prioridade] || 'Prioridade Desconhecida';
-                    const departamentoDescritivo = departamentoMap[ticket.id_ticket_setor] || 'Departamento Desconhecido';
+                    if (cliente) {
+                        const statusDescritivo = statusMap[ticket.su_status] || 'Status Desconhecido';
+                        const prioridadeDescritivo = prioridadeMap[ticket.prioridade] || 'Prioridade Desconhecida';
 
-                    const message = {
-                        color: 0xff0000,
-                        title: `${ticket.id} - ${ticket.titulo}`,
-                        description: ticket.menssagem,
-                        footer: {
-                            text: `Data de criação: ${ticket.data_criacao}`
-                        },
-                        fields: [
-                            {
-                                name: "\u200b",
-                                value: "\u200b"
+                        const message = {
+                            color: 0xff0000,
+                            title: `${ticket.id} - ${ticket.titulo}`,
+                            description: ticket.menssagem,
+                            footer: {
+                                text: `Data de criação: ${ticket.data_criacao}`
                             },
-                            {
-                                name: "Cliente",
-                                value: cliente.id +'-'+ cliente.razao
-                            },
-                            {
-                                name: "Status",
-                                value: statusDescritivo,
-                                inline: true
-                            },
-                            {
-                                name: "Prioridade",
-                                value: prioridadeDescritivo,
-                                inline: true
-                            }
-                        ]
+                            fields: [
+                                {
+                                    name: "\u200b",
+                                    value: "\u200b"
+                                },
+                                {
+                                    name: "Cliente",
+                                    value: cliente.id +'-'+ cliente.razao
+                                },
+                                {
+                                    name: "Status",
+                                    value: statusDescritivo,
+                                    inline: true
+                                },
+                                {
+                                    name: "Prioridade",
+                                    value: prioridadeDescritivo,
+                                    inline: true
+                                }
+                            ]
+                        }
+                        
+                        // Determina o canal com base no departamento do ticket
+                        const canalId = canalMap[ticket.id_ticket_setor] || config.CHANNEL_ID_SUPORTE; // Fallback para o canal de suporte se não encontrar
+
+                        // Enviar notificação no Discord
+                        sendMessageToDiscord(client, { embeds: [message] }, canalId, 'IXC');
+                    } else {
+                        console.error("Erro ao obter as informações do cliente.");
                     }
-                    
-                    // Determina o canal com base no departamento do ticket
-                    const canalId = canalMap[ticket.id_ticket_setor] || config.CHANNEL_ID_SUPORTE; // Fallback para o canal de suporte se não encontrar
-
-                    // Enviar notificação no Discord
-                    sendMessageToDiscord(client, { embeds: [message] }, canalId, 'IXC');
-                } else {
-                    console.error("Erro ao obter as informações do cliente.");
                 }
             }
         } else {

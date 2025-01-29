@@ -11,7 +11,7 @@ function handleZapsignWebhook(data, client) {
     if (status === 'signed') {
         // Filtra e mapeia os signatários
         const filteredSigners = data.signers
-            .filter(signer => signer.email !== "contato@ilhaconnect.net.br")
+            .filter(signer => signer.email !== config.ZAPSIGN_SIGNER)
             .map(signer => ({
                 name: signer.name,
                 cpf: signer.cpf,
