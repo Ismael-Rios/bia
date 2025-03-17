@@ -24,7 +24,8 @@ const prioridadeMap = {
 const canalMap = {
     '1': config.CHANNEL_ID_FINANCEIRO,
     '2': config.CHANNEL_ID_SUPORTE,
-    '5': config.CHANNEL_ID_COMERCIAL
+    '5': config.CHANNEL_ID_COMERCIAL,
+    '6': config.CHANNEL_ID_SUPORTE
 };
 
 // Função para buscar informações do cliente pelo ID
@@ -87,7 +88,7 @@ async function checkNewAtendimentos(client) {
         if (response.data && response.data.registros && response.data.registros.length > 0) {
             for (const ticket of response.data.registros) {
                 // Filtragem de tickets por responsável técnico
-                if (ticket.id_responsavel_tecnico == '0' || ticket.id_responsavel_tecnico == '9') {
+                if (config.USERS_MAP[ticket.id_responsavel_tecnico]) { // if (ticket.id_responsavel_tecnico == '0' || ticket.id_responsavel_tecnico == '9') {
                     // Faz uma requisição para obter os dados do cliente
                     const cliente = await getClienteInfo(ticket.id_cliente); // Adicionado o await aqui
 
