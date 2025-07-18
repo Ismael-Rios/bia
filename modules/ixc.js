@@ -158,7 +158,7 @@ async function checkNewAtendimentos(client) {
 
 // Função para buscar atendimentos novos
 async function checkNewOrdemServico(client) {
-    const date = new Date(Date.now() - 60 * 60000);
+    const date = new Date(Date.now() - 1 * 60000);
     const timeAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)); 
     const localDateTime = timeAgo.toISOString().replace('T', ' ').split('.')[0];
     
@@ -239,8 +239,8 @@ function initializeIXC(client) {
     cron.schedule('*/1 * * * *', () => {
         checkNewAtendimentos(client);
     });
-    cron.schedule('*/60 * * * *', () => {
-        checkNewAtendimentos(client);
+    cron.schedule('*/1 * * * *', () => {
+        checkNewOrdemServico(client);
     });
 }
 
