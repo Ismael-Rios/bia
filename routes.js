@@ -1,6 +1,6 @@
 // Importa os módulos
 const modobankModule = require('./modules/modobank');
-const zapsignModule = require('./modules/zapsign');
+const ixcassinaModule = require('./modules/zabbix');
 const zabbixModule = require('./modules/zabbix');
 
 module.exports = (app, client) => {
@@ -10,10 +10,10 @@ module.exports = (app, client) => {
         res.status(200).send('Webhook do Modobank recebido!');
     });
 
-    // Rota para o webhook do Zapsign
-    app.post('/webhook/zapsign', (req, res) => {
-        zapsignModule.handleZapsignWebhook(req.body, client);
-        res.status(200).send('Webhook do Zapsign recebido!');
+    // Rota para o webhook do IXC Assina
+    app.post('/webhook/ixcassina', (req, res) => {
+        ixcassinaModule.handleIXCassinaWebhook(req.body, client);
+        res.status(200).send('Webhook do IXC Assina recebido!');
     });
 
     // Rota para o webhook do Zabbix
