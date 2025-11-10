@@ -1,31 +1,32 @@
-// ixcassina.js
 const config = require('../config');
 const { sendMessageToDiscord } = require('./discord');
 
 function handleIXCassinaWebhook(data, client) {
-    const documentName = data.name;
-
-    const filteredSigners = data.signers
-        .filter(signers => signers.sign_as !== config.IXCASSINA_SIGNER)
-        .map(signers => ({
-            name: signers.name,
-            phone: signers.phone,
-            email: signers.email,
-            cpf: signers.cpf
+    const document = data.document;
+    const documentName = document.name;
+    const documentStatus = document.status;
+    const signers = Array.isArray(document.signers) ? document.signers : [];
+    
+    const filteredSigners = signers
+        .filter(signer => signer.sign_as !== config.IXCASSINA_SIGNER)
+        .map(signer => ({
+            name: signer.name || "Não informado: Nome",
+            phone: signer.phone || "Não informado: Telefone",
+            email: signer.email || "Não informado: Email",
+            cpf: signer.cpf || "Não informado: CPF"
         }));
     
-    const signerName = filteredSigners.map(signers.name).join(', ');
-    const signerPhone = filteredSigners.map(signers.phone).join(', ');
-    const signerEmail = filteredSigners.map(signers.email).join(', ');
-    const signerCPF = filteredSigners.map(signers.cpf).join(', ');
+    const signerName = filteredSigners.map(s => s.name).join(', ');
+    const signerPhone = filteredSigners.map(s => s.phone).join(', ');
+    const signerEmail = filteredSigners.map(s => s.email).join(', ');
+    const signerCPF = filteredSigners.map(s => s.cpf).join(', ');
+
+    const signed_url = document.files?.[0]?.signed_url || "URL não disponível";
     
     const message = {
         color: 39168,
-        url: data.files.signed_url,
         title: `Documento assinado: ${documentName}`,
-        footer: {
-            text: `Status: ${data.status}`
-        },
+        url: signed_url,
         fields: [
             {
                 name: "Nome",
@@ -43,67 +44,11 @@ function handleIXCassinaWebhook(data, client) {
                 name: "CPF",
                 value: signerCPF
             }
-        ]
+        ],
+        footer: {text: `Status: ${documentStatus}`}
     };
 
     sendMessageToDiscord(client, { embeds: [message] }, config.CHANNEL_ID_IXCASSINA, 'IXC Assina');
-}
-
-function handleZapsignWebhook(data, client) {
-    const signedDocumentInfo = data.signed_file;
-    const documentId = data.external_id;
-    const status = data.status;
-
-    // Envia mensagem apenas se o status for 'signed'
-    if (status === 'signed') {
-        // Filtra e mapeia os signatários
-        const filteredSigners = data.signers
-            .filter(signer => signer.email !== config.ZAPSIGN_SIGNER)
-            .map(signer => ({
-                name: signer.name,
-                cpf: signer.cpf,
-                email: signer.email,
-                phoneNumber: signer.phone_number
-            }));
-        
-        // Cria as strings de nomes e CPFs a partir do array filtrado
-        const signerName = filteredSigners.map(signer => signer.name).join(', ');
-        const signerCPF = filteredSigners.map(signer => signer.cpf).join(', ');
-        const signerEmail = filteredSigners.map(signer => signer.email).join(', ');
-        const signerPhoneNumber = filteredSigners.map(signer => signer.phoneNumber).join(', ');
-
-        const message = {
-            color: 39168,
-            url: signedDocumentInfo,
-            title: `Documento assinado: ${documentId}`,
-            footer: {
-                text: `Status: ${status}`
-            },
-            fields: [
-                {
-                    name: "CPF",
-                    value: signerCPF
-                },
-                {
-                    name: "Cliente",
-                    value: signerName
-                },
-                {
-                    name: "Telefone",
-                    value: signerPhoneNumber,
-                    inline: true
-                },
-                {
-                    name: "Email",
-                    value: signerEmail,
-                    inline: true
-                }
-                
-            ]
-        };
-
-        sendMessageToDiscord(client, { embeds: [message] }, config.CHANNEL_ID_IXCASSINA, 'IXC Assina');
-    }
 }
 
 module.exports = { handleIXCassinaWebhook };

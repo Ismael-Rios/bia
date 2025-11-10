@@ -17,7 +17,7 @@ function sendMessageToDiscord(client, content, channelId, service) {
     }
 }
 
-function sendMessageToThread(client, message, channelId, originalMessageId) {
+function sendMessageToThread(client, message, channelId, originalMessageId, service) {
     // EM CONSTRUÇÃO
 }
 
